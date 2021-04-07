@@ -8,6 +8,9 @@ jobs:
     steps:
       - checkout
       - run: cat $NDK_VERSION > ndk_version
+      - run:
+          name: install pigz
+          command: sudo apt update && sudo apt install pigz
       - restore_cache:
           name: Restore cached NDK
           keys:
@@ -15,14 +18,14 @@ jobs:
       - run: 
           command: |
               if [ -f ndk.tar.gz ]; then
-                tar -zxvf ndk.tar.gz
-                mv ndk /opt/android/sdk/ndk/$NDK_VERSION
+                tar xvf ndk.tar.gz --use-compress-prog=pigz
+                mv opt/android/sdk/ndk/$NDK_VERSION /opt/android/sdk/ndk/$NDK_VERSION
               fi
       - run:
           name: install ndk
           command: |
             sdkmanager "ndk;$NDK_VERSION"
-      - run: tar -zcvf ndk.tar.gz /opt/android/sdk/ndk/$NDK_VERSION
+      - run: tar cv --use-compress-program pigz -f ndk.tar.gz /opt/android/sdk/ndk/$NDK_VERSION
       - save_cache: 
           name: Cache downloaded NDK
           key: ndk-cache-{{ checksum "ndk_version" }}
