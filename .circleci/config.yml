@@ -1,0 +1,34 @@
+version: 2.1
+jobs:
+  build:
+    machine:
+      image: android:202102-01
+    environment:
+      NDK_VERSION: 22.1.7171670
+    steps:
+      - checkout
+      - run: cat $NDK_VERSION > ndk_version
+      - restore_cache:
+          name: Restore cached NDK
+          keys:
+            - ndk-cache-{{ checksum "ndk_version" }}
+      - run: 
+          command: |
+              if [ -f ndk.tar.gz ]; then
+                tar -zxvf ndk.tar.gz
+                mv ndk /opt/android/sdk/ndk/$NDK_VERSION
+              fi
+      - run:
+          name: install ndk
+          command: |
+            sdkmanager "ndk;$NDK_VERSION"
+      - run: tar -zcvf ndk.tar.gz /opt/android/sdk/ndk/$NDK_VERSION
+      - save_cache: 
+          name: Cache downloaded NDK
+          key: ndk-cache-{{ checksum "ndk_version" }}
+          paths:
+          - ndk.tar.gz
+workflows:
+  workflow:
+    jobs:
+      - build
