@@ -8,7 +8,7 @@ jobs:
       NDK_VERSION: 22.1.7171670
     steps:
       - checkout
-      - run: cat $NDK_VERSION > ndk_version
+      - run: echo $NDK_VERSION > ndk_version
       - run:
           name: install pigz
           command: sudo apt update && sudo apt install pigz
