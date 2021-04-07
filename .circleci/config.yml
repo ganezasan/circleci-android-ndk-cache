@@ -3,6 +3,7 @@ jobs:
   build:
     machine:
       image: android:202102-01
+    resource_class: xlarge
     environment:
       NDK_VERSION: 22.1.7171670
     steps:
